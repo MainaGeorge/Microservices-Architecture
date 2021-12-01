@@ -15,6 +15,7 @@ services:
       - "8080:8000"
       - "9000:9000"
 
+
   catalogdb:
     container_name: catalogdb
     restart: always
@@ -31,6 +32,31 @@ services:
       - "6379:6379"
 
 
+  discountdb:
+    container_name: discountdb
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin1234
+      - POSTGRES_DB=DiscountDb
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+
+  pgadmin:
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@aspnetrun.com
+      - PGADMIN_DEFAULT_PASSWORD=admin1234
+    restart: always
+    ports:
+      - "5050:80"
+    volumes:
+      - "pgadmin_data:/root/.pgadmin" 
+
+
   catalog.api:
     container_name: catalog.api
     environment:
@@ -40,6 +66,7 @@ services:
       - catalogdb
     ports:
       - "8000:80"
+
 
   basket.api:
     container_name: basket.api
