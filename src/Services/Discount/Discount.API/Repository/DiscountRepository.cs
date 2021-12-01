@@ -2,7 +2,6 @@
 using Discount.API.Entities;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
-using System;
 using System.Threading.Tasks;
 
 namespace Discount.API.Repository
@@ -21,7 +20,7 @@ namespace Discount.API.Repository
                 _configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
 
             var affected = await connection.ExecuteAsync(
-                "INSERT INTO Coupon(ProductName,Description,Amount VALUES(@ProductName, @Description, @Amount)",
+                "INSERT INTO Coupon(ProductName,Description,Amount) VALUES(@ProductName, @Description, @Amount)",
                 new { coupon.ProductName, coupon.Description, coupon.Amount});
 
             return affected != 0;
