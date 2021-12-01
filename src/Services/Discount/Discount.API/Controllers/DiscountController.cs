@@ -1,6 +1,7 @@
 ﻿using Discount.API.Entities;
 using Discount.API.Repository;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace Discount.API.Controllers
         private readonly IDiscountRepository _repo;
         public DiscountController(IDiscountRepository repo)
         {
-            _repo = repo;
+            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
         }
 
         [HttpGet("{productName}", Name = nameof(GetDiscount))]
