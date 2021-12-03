@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Ordering.Application.ExtensionMethods;
+using Ordering.Infrastructure.ExtensionMethods;
 
 namespace Ordering.API
 {
@@ -22,6 +23,8 @@ namespace Ordering.API
         {
             services.AddApplicationServices();
             services.AddControllers();
+            services.AddInfrastructureInjections(Configuration);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ordering.API", Version = "v1" });

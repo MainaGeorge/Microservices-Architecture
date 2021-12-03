@@ -31,7 +31,7 @@ namespace Ordering.Application.Behaviours
                 .Where(f => f != null)
                 .ToList();
 
-            if (failures.Any()) throw new ValidationException(failures);
+            if (failures.Any()) throw new Exceptions.ValidationException(failures);
 
             return await next();
         }

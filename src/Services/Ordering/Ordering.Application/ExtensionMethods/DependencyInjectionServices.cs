@@ -6,7 +6,7 @@ using Ordering.Application.Behaviours;
 
 namespace Ordering.Application.ExtensionMethods
 {
-    public static class ServiceRegistration
+    public static class DependencyInjectionServices
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
@@ -17,7 +17,9 @@ namespace Ordering.Application.ExtensionMethods
             services.AddTransient(typeof(IPipelineBehavior<,>),
                 typeof(UnhandledExceptionBehaviour<,>));
 
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>),
+                typeof(ValidationBehaviour<,>));
+
             return services;
         }
     }
