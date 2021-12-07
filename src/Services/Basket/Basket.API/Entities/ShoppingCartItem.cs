@@ -1,4 +1,4 @@
-﻿namespace Basket.API.Entites
+﻿namespace Basket.API.Entities
 {
     public class ShoppingCartItem
     {

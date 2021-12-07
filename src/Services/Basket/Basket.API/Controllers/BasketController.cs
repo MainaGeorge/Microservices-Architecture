@@ -1,10 +1,13 @@
-﻿using Basket.API.Entites;
+﻿using Basket.API.Entities;
 using Basket.API.GRPCService;
 using Basket.API.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
+using EventBus.Messages.Events;
+using MassTransit;
+using Microsoft.AspNetCore.Http;
 
 namespace Basket.API.Controllers
 {
@@ -14,15 +17,21 @@ namespace Basket.API.Controllers
     {
         private readonly IBasketRepository _repo;
         private readonly DiscountGrpcService _discountService;
+        private readonly IMapper _mapper;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public BasketController(IBasketRepository repo, DiscountGrpcService discountService)
+        public BasketController(IBasketRepository repo,
+            DiscountGrpcService discountService, IMapper mapper,
+            IPublishEndpoint publishEndpoint)
         {
             _repo = repo ?? throw new ArgumentNullException(nameof(repo));
             _discountService = discountService ?? throw new ArgumentNullException(nameof(discountService));
+            _mapper = mapper;
+            _publishEndpoint = publishEndpoint;
         }
 
         [HttpGet("{userName}", Name = nameof(GetBasket))]
-        [ProducesResponseType(typeof(ShoppingCart), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ShoppingCart), (StatusCodes.Status200OK))]
         public async Task<ActionResult<ShoppingCart>> GetBasket([FromRoute]string userName)
         {
             var basket = await _repo.GetBasket(userName);
@@ -31,7 +40,7 @@ namespace Basket.API.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(ShoppingCart), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ShoppingCart), StatusCodes.Status204NoContent)]
         public async Task<ActionResult<ShoppingCart>> UpdateBasket([FromBody] ShoppingCart basket)
         {
             foreach(var item in basket.Items)
@@ -41,12 +50,30 @@ namespace Basket.API.Controllers
 
 
         [HttpDelete("{userName}")]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteBasket([FromRoute]string userName)
         {
             await _repo.DeleteBasket(userName);
 
             return NoContent();
+        }
+
+        [HttpPost("[action]")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Checkout([FromBody] BasketCheckout basketCheckout)
+        {
+            var basket = await _repo.GetBasket(basketCheckout.UserName);
+
+            if (basket is null) return BadRequest();
+
+            var basketCheckoutEvent = _mapper.Map<BasketCheckoutEvent>(basketCheckout);
+            basketCheckoutEvent.TotalPrice = basket.TotalPrice;
+
+            await _publishEndpoint.Publish(basketCheckoutEvent);
+
+            await _repo.DeleteBasket(basket.UserName);
+            return Accepted();
         }
     }
 }

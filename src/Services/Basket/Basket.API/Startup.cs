@@ -1,6 +1,7 @@
 using Basket.API.GRPCService;
 using Basket.API.Repository;
 using Discount.GRPC.Protos;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,8 +26,12 @@ namespace Basket.API
             services.AddControllers();
             services.AddScoped<IBasketRepository, BasketRepository>();
             services.AddScoped<DiscountGrpcService>();
-
-
+            services.AddMassTransit(config => {
+                config.UsingRabbitMq((ctx, cfg) => {
+                    cfg.Host(Configuration["EventBusSettings:HostAddress"]);
+                });
+            });
+            services.AddMassTransitHostedService();
             services.AddStackExchangeRedisCache(opt =>
                 {
                     opt.Configuration = Configuration["CacheSettings:ConnectionString"];
@@ -40,6 +45,8 @@ namespace Basket.API
             {
                 o.Address = new System.Uri(Configuration["GrpcServiceSetting:DiscountUri"]);
             });
+
+            services.AddAutoMapper(typeof(Startup));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -1,4 +1,4 @@
-﻿using Basket.API.Entites;
+﻿using Basket.API.Entities;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System.Threading.Tasks;

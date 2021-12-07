@@ -33,7 +33,8 @@ namespace Ordering.Application.Features.Orders.Commands.UpdateOrder
                 throw new NotFoundException(nameof(Order), request.Id);
             }
 
-            _mapper.Map(request, orderToUpdate, typeof(UpdateOrderCommand), typeof(Order));
+            _mapper.Map(request, orderToUpdate,
+                typeof(UpdateOrderCommand), typeof(Order));
 
             await _orderRepo.UpdateAsync(orderToUpdate);
 

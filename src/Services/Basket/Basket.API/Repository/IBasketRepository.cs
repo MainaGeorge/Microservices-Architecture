@@ -1,4 +1,4 @@
-﻿using Basket.API.Entites;
+﻿using Basket.API.Entities;
 using System.Threading.Tasks;
 
 namespace Basket.API.Repository
