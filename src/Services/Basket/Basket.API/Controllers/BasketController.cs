@@ -58,7 +58,7 @@ namespace Basket.API.Controllers
             return NoContent();
         }
 
-        [HttpPost("[action]")]
+        [HttpPost("[action]", Name = nameof(Checkout))]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Checkout([FromBody] BasketCheckout basketCheckout)
