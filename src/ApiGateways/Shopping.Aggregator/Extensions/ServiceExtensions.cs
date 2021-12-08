@@ -11,18 +11,18 @@ namespace Shopping.Aggregator.Extensions
     {
         public static IServiceCollection AddHttpClientCustom(this IServiceCollection services, IConfiguration config)
         {
-            var apiSettings = config.GetValue<ApiSettings>("ApiSettings");
+            
             services.AddHttpClient<ICatalogService, CatalogService>(o =>
             {
-                o.BaseAddress = new Uri(apiSettings.CatalogUrl);
+                o.BaseAddress = new Uri(config["ApiSettings:CatalogUrl"]);
             });
             services.AddHttpClient<IBasketService, BasketService>( o =>
             { 
-                o.BaseAddress = new Uri(apiSettings.BasketUrl);
+                o.BaseAddress = new Uri(config["ApiSettings:BasketUrl"]);
             });
             services.AddHttpClient<IOrderService, OrderService>(o =>
             {
-                o.BaseAddress = new Uri(apiSettings.OrdersUrl);
+                o.BaseAddress = new Uri(config["ApiSettings:OrdersUrl"]);
             });
 
             return services;
