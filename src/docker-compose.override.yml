@@ -143,3 +143,18 @@ services:
     ports:
       - "8010:80"
 
+
+  shopping.aggregator:
+    container_name: shopping.aggregator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ApiSettings:CatalogUrl=http://catalog.api"
+      - "ApiSettings:BasketUrl=http://basket.api"
+      - "ApiSettings:OrdersUrl=http://ordering.api"
+    ports:
+      - "8015:80"
+    depends_on:
+      - catalog.api
+      - basket.api
+      - ordering.api
+
